@@ -20,9 +20,9 @@ export const userRoutes = new Elysia({ prefix: "/api/users" })
     };
   }, {
     body: t.Object({
-      name: t.String(),
-      email: t.String({ format: "email" }),
-      password: t.String()
+      name: t.String({ maxLength: 255 }),
+      email: t.String({ format: "email", maxLength: 255 }),
+      password: t.String({ maxLength: 255 })
     })
   })
   .post("/login", async ({ body, set }) => {
@@ -41,8 +41,8 @@ export const userRoutes = new Elysia({ prefix: "/api/users" })
     };
   }, {
     body: t.Object({
-      email: t.String({ format: "email" }),
-      password: t.String()
+      email: t.String({ format: "email", maxLength: 255 }),
+      password: t.String({ maxLength: 255 })
     })
   })
   // Refactor logic extracted to derive() for DRY
