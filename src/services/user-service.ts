@@ -77,3 +77,31 @@ export const loginUser = async (payload: any) => {
     data: token
   };
 };
+
+export const getCurrentUser = async (token: string) => {
+  // 1. Find session by token
+  const session = await db.query.sessions.findFirst({
+    where: eq(sessions.token, token),
+  });
+
+  if (!session) {
+    return null;
+  }
+
+  // 2. Find user by userId in session
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, session.userId as any), // Ensure compatibility for serial/int types
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  // 3. Return safe user data
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    created_at: user.createdAt
+  };
+};
