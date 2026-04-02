@@ -105,3 +105,11 @@ export const getCurrentUser = async (token: string) => {
     created_at: user.createdAt
   };
 };
+
+export const logoutUser = async (token: string) => {
+  // Directly delete session by token for efficiency
+  const [result] = await db.delete(sessions).where(eq(sessions.token, token));
+  
+  // Return true if at least one row was affected (deleted)
+  return (result as any).affectedRows > 0;
+};
