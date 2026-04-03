@@ -105,3 +105,19 @@ export const getCurrentUser = async (token: string) => {
     created_at: user.createdAt
   };
 };
+
+export const logoutUser = async (token: string) => {
+  // 1. Find session by token
+  const session = await db.query.sessions.findFirst({
+    where: eq(sessions.token, token),
+  });
+
+  if (!session) {
+    return false;
+  }
+
+  // 2. Delete session
+  await db.delete(sessions).where(eq(sessions.token, token));
+
+  return true;
+};
