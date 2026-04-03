@@ -1,0 +1,48 @@
+import { db } from "../db";
+import { users } from "../db/schema";
+import { eq } from "drizzle-orm";
+
+export const registerUser = async (payload: any) => {
+  const { name, email, password } = payload;
+
+  // 1. Check if user already exists
+  const existingUser = await db.query.users.findFirst({
+    where: eq(users.email, email),
+  });
+
+  if (existingUser) {
+     return {
+        success: false,
+        message: "User already exists"
+     };
+  }
+
+  // 2. Hash password (bcrypt compatible)
+  const hashedPassword = await Bun.password.hash(password, {
+    algorithm: "bcrypt",
+    cost: 10,
+  });
+
+  // 3. Insert user
+  await db.insert(users).values({
+    name,
+    email,
+    password: hashedPassword,
+  });
+
+  // 4. Get created user (without password)
+  const newUser = await db.query.users.findFirst({
+    where: eq(users.email, email),
+  });
+
+  return {
+    success: true,
+    message: "User created successfully",
+    data: {
+        id: newUser?.id,
+        name: newUser?.name,
+        email: newUser?.email,
+        created_at: newUser?.createdAt
+    }
+  };
+};

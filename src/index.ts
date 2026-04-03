@@ -1,7 +1,9 @@
 import { Elysia } from "elysia";
 import { db } from "./db";
+import { userRoutes } from "./routes/user-route";
 
 const app = new Elysia()
+  .use(userRoutes)
   .get("/", () => ({
     message: "Welcome to Elysia with Drizzle and MySQL!",
     status: "online",
